@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body bgcolor="red">
+
+    <form id="upload">
+        <label for="file">File to upload</label>
+        <input type="file" id="file" accept=".json">
+
+        <button>Upload</button>
+    </form>
+
+    <p id="path"></p>
+
+
+
+    <!-- <canvas id="myCanvas" width="240" height="297" style="border:1px solid #d3d3d3;">
+        Your browser does not support the HTML5 canvas tag.
+    </canvas> -->
+
+    <img id="scream" alt="The Scream" src="file:///C:/Users/sudes/Desktop/Animations/Ammos/ammo_1.png">
+
+    <!-- <div id="image">
+        <img alt="The Scream" />
+    </div> -->
+    <script>
+
+        let form = document.querySelector('#upload');
+        let file = document.querySelector('#file');
+
+        form.addEventListener('submit', handleSubmit);
+
+        function handleSubmit(event) {
+
+            // Stop the form from reloading the page
+            event.preventDefault();
+
+            // If there's no file, do nothing
+            if (!file.value.length) return;
+
+            // Create a new FileReader() object
+            let reader = new FileReader();
+
+            // Setup the callback event to run when the file is read
+            reader.onload = spriteCut;
+
+            // Read the file
+            reader.readAsText(file.files[0]);
+
+            function spriteCut(event) {
+                // console.log(event);
+                let i = 0
+                var docPath = String(document.documentURI);
+                var docPath = docPath.slice(0, -11);
+                var map = {};
+                let str = event.target.result;
+                let json = JSON.parse(str);
+                // console.log('string', str);
+                // console.log('json', json);
+
+                json.forEach(function (data) {
+
+                    map[i++] = data;
+                    var subMetas = data.subMetas;
+
+                    var filepath = docPath + data.texturePath;
+
+                    var spriteSheet = new Image();
+                    spriteSheet.src = filepath;
+
+
+
+
+                    spriteSheet.onload = function () {
+
+                        for (var key in subMetas) {
+                            i = 0;
+                            // console.log(key);
+                            var subMeta = subMetas[key];
+                            const canvas = document.createElement("canvas");
+                            const oX = subMeta.oX;
+                            const oY = subMeta.oY;
+                            // const w = subMeta.w;
+                            // const h = subMeta.h;
+                            const tX = subMeta.tX;
+                            const tY = subMeta.tY;
+                            const trX = tX + w / 2;
+                            const trY = tY + h / 2;
+                            console.log(h);
+                            if (subMeta.r == true) {
+                                var w = subMeta.h;
+                                var h = subMeta.w;
+                                console.log(h);
+                            } else {
+                                var w = subMeta.w;
+                                var h = subMeta.h;
+                            }
+
+                            var context = canvas.getContext("2d");
+                            if (subMeta.r === true) {
+                                // canvas.width = subMeta.rH;
+                                // canvas.height = subMeta.rW;
+                                console.log(subMeta.r);
+                                context.translate(trX, trY);
+                                context.rotate(Math.Pi / 2);
+                                context.rotate(-trX, -trY);
+                            }
+                            else {
+                                canvas.width = subMeta.rW;
+                                canvas.height = subMeta.rH;
+                            }
+
+                            if (oX || oY == NaN) {
+                                const oX = 1;
+                                const oY = 1;
+                            }
+
+                            // if (subMeta.r == true){
+                            //     const w = subMeta.h;
+                            //     const h = subMeta.w;
+                            //     console.log(subMeta.r);
+                            // }
+                            context.drawImage(
+                                spriteSheet,
+                                subMeta.tX,
+                                subMeta.tY,
+                                w,
+                                h,
+                                oX,
+                                oY,
+                                subMeta.w,
+                                subMeta.h
+
+                                // subMeta.tX + subMeta.oX,
+                                // subMeta.tY,
+                                // subMeta.w,
+                                // subMeta.h,
+                                // i * 300 + 10,
+                                // 10,
+                                // subMeta.rW,
+                                // subMeta.rH
+
+                            )
+
+                            context.strokeStyle = "#FF0000";
+
+                            document.body.appendChild(canvas);
+                            console.log(canvas);
+                            i++
+                        }
+                    }
+
+
+
+
+
+
+
+
+
+                    // console.log(spriteSheet);
+                    // for (var key in subMetas) {
+                    //     // console.log(key);
+                    //     var subMeta = subMetas[key];
+
+                    //     // console.log(subMeta);
+                    //     const canvas = document.createElement("canvas");
+
+                    //     var context = canvas.getContext("2d");
+                    //     canvas.width = subMeta.rW;
+                    //     canvas.height = subMeta.rH;
+                    //     // console.log(context);
+                    //     // console.log(subMeta.tX);
+
+                    //     console.log(spriteSheet);
+                    //     // const img = document.querySelector("img");
+                    //     // img.src = filepath;
+
+                    //     spriteSheet.onload = function () {
+                    //         context.drawImage(
+                    //             spriteSheet,
+                    //             subMeta.tX + subMeta.oX,
+                    //             subMeta.tY,
+                    //             subMeta.w,
+                    //             subMeta.h,
+                    //             10,
+                    //             10,
+                    //             subMeta.rW,
+                    //             subMeta.rH
+
+                    //         )
+                    //     }
+                    //     document.body.appendChild(canvas);
+                    //     console.log(canvas);
+
+
+                    //     var spriteDataURL = canvas.toDataURL("image/png");
+
+
+                    //     var spriteImage = new Image();
+                    //     spriteImage.src = spriteDataURL;
+
+                    //     // console.log(spriteImage);
+                    //     // const downloadLink = document.createElement("a");
+                    //     // downloadLink.href = spriteImage;
+                    //     // downloadLink.download = key;
+                    //     // downloadLink.click();
+
+
+
+                    //     // console.log(canvas);
+
+                    //     var spriteDataURL = canvas.toDataURL("image/png");
+
+
+                    //     var spriteImage = new Image();
+                    //     spriteImage.src = spriteDataURL;
+
+                    //     // const img = document.querySelector("img");
+                    //     // img.src = filepath;
+                    //     // console.log(img);
+                    //     // console.log(spriteSheet);
+
+                    //     // console.log(spriteImage);
+                    //     // var newTab = window.open('about:blank', 'image from canvas');
+                    //     // newTab.document.write("<img src='" + spriteDataURL + "' alt='from canvas'/>");
+                    //     // const downloadLink = document.createElement("a");
+                    //     // downloadLink.href = spriteImage;
+                    //     // downloadLink.download = key;
+                    //     // downloadLink.click();
+
+
+                    //     // spriteImage.style.margin = "10px";
+                    //     // document.body.appendchild(spriteImage);
+                    //     // image.innerHTML = spriteImage;
+                    //     // console.log(spriteDataURL);
+                    //     // var newTab = window.open('about:blank', 'image from canvas');
+
+                    // };
+
+                    // var spriteDataURL = canvas.toDataURL("image/png");
+                    // var spriteImage = new Image();
+                    // spriteImage.style.margin = "10px";
+                    // // document.body.appendchild(spriteImage);
+                    // // image.innerHTML = spriteImage;
+                    // // console.log(spriteDataURL);
+                    // var newTab = window.open('about:blank', 'image from canvas');
+                    // newTab.document.write("<img src='" + spriteDataURL + "' alt='from canvas'/>");
+
+
+                    // console.log(data.subMetas[i]);
+                    // var keys = Object.keys(data.subMetas);
+
+                    // var rand = data.subMetas[keys[i]];
+                    // console.log(rand);
+                    // var lambai = keys.length;
+                    // console.log(lambai);
+                    // console.log(keys);
+
+                    // for (var i = 0; i < keys.length; i++) {
+
+                    //     var sprite = Object.entries(keys);
+                    //     // console.log(sprite);
+
+                    //     var canvas = document.createElement('canvas');
+                    //     canvas.width = sprite.w;
+                    //     canvas.height = sprite.h;
+
+                    //     var context = canvas.getContext('2d');
+                    //     context.drawImage(spriteSheet, sprite.r, sprite.oX, sprite.oY, sprite.tX, sprite.tY, sprite.w, sprite.h, sprite.rW, sprite.rH);
+
+                    //     var spriteImage = new Image();
+                    //     spriteImage.src = canvas.toDataURL();
+                    //     spriteImage.name = sprite.keys;
+                    // }
+
+                })
+            }
+
+
+
+            // console.log(document.documentURI);
+
+            // var spriteSheet = new Image();
+            // spriteSheet.src = json.texturePath;
+
+            // console.log(json.texturePath);
+
+            function xyz() {
+                const img = document.querySelector("img");
+
+                var canvas = document.getElementById("myCanvas");
+                var ctx = canvas.getContext("2d");
+                // var img = document.getElementById("scream");
+                ctx.width = 430;
+                ctx.height = 22;
+
+                console.log(img)
+                ctx.drawImage(img, 10, 10, 79, 800);
+                console.log(canvas);
+            }
+
+
+
+
+        }
+
+
+
+        // fetch('sprite.json').then(function (response) {
+        //     return response.json();
+        // }).then(function (data) {
+        //     const file = data.subMetas;
+        //     console.log(file);
+        // }).catch(function (error) {
+        //     console.error("Error");
+        // })
+
+    </script>
+</body>
+
+</html>
